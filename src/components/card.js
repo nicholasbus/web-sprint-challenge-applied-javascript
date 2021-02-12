@@ -1,3 +1,6 @@
+// importing axios
+import axios from 'axios';
+
 const Card = (article) => {
   // TASK 5
   // ---------------------
@@ -17,6 +20,38 @@ const Card = (article) => {
   //   </div>
   // </div>
   //
+  
+  // Creating each needed element
+  const card = document.createElement('div');
+  const headline = document.createElement('div');
+  const author = document.createElement('div');
+  const imgContainer = document.createElement('div');
+  const img = document.createElement('img');
+  const span = document.createElement('span');
+
+  // appending each child element to the parent card div
+  card.appendChild(headline);
+  card.appendChild(author);
+  author.appendChild(imgContainer);
+  author.appendChild(span);
+  imgContainer.appendChild(img);
+
+  // adding all of the text and attributes
+  headline.textContent = article.headline;
+  img.src = article.authorPhoto;
+  span.textContent = `By ${article.authorName}`;
+
+  // adding all of the classes
+  card.classList.add('card');
+  headline.classList.add('headline');
+  author.classList.add('author');
+  imgContainer.classList.add('img-container');
+
+  // adding the event listener
+  card.addEventListener('click', e => console.log(headline.textContent));
+
+  // returning the new Card component
+  return card;
 }
 
 const cardAppender = (selector) => {
@@ -28,6 +63,20 @@ const cardAppender = (selector) => {
   // Create a card from each and every article object in the response, using the Card component.
   // Append each card to the element in the DOM that matches the selector passed to the function.
   //
+
+  // making a GET request to `https://lambda-times-api.herokuapp.com/articles`
+  axios.get('https://lambda-times-api.herokuapp.com/articles')
+    .then(res => {
+      // looping over the returned data with a For In loop
+      for(let topic in res.data.articles){
+        // Nesting a For In loop in order to access each individual nested object
+        for(let article in res.data.articles[topic]){
+          // Selecting a parent element and appending the created Card to it
+          document.querySelector(`${selector}`).appendChild(Card(res.data.articles[topic][article]));
+        }
+      }
+    })
+    .catch(err => console.log(err)); // Error handling
 }
 
 export { Card, cardAppender }
